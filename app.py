@@ -21,7 +21,7 @@ class Item(BaseModel):
     task_description: Optional[str] = None
 
 # Create item
-@app.post("/create_log", response_model=Item)
+@app.post("/items", response_model=Item)
 def create_item(item: Item): # Generate a unique ID for each item
     data = {
         "task_name": item.task_name,
@@ -34,7 +34,7 @@ def create_item(item: Item): # Generate a unique ID for each item
     raise HTTPException(status_code=500, detail="Failed to create item")
 
 # Read all items
-@app.get("/read_logs")
+@app.get("/items")
 def read_all_items():
     response = supabase.table("company_logs").select("*").execute()
     if response:
@@ -42,7 +42,7 @@ def read_all_items():
     raise HTTPException(status_code=500, detail="Failed to create item")
 
 
-@app.get("/get_logs_by_id", response_model=Item)
+@app.get("/items/{item_id}", response_model=Item)
 def get_item_by_id(item_id: str):
     response = supabase.table("company_logs").select("*").eq("id", item_id).execute()
 
@@ -54,7 +54,7 @@ def get_item_by_id(item_id: str):
     raise HTTPException(status_code=404, detail="Item not found")
 
 # Delete item
-@app.delete("/delete_log", response_model=dict)
+@app.delete("/items/{item_id}", response_model=dict)
 def delete_item(item_id: str):
     response = supabase.table("company_logs").delete().eq("id", item_id).execute()
     if response:
@@ -62,7 +62,7 @@ def delete_item(item_id: str):
     raise HTTPException(status_code=500, detail="Failed to delete item")
 
 # Modify item
-@app.put("/modify_log", response_model=Item)
+@app.put("/items/{item_id}", response_model=Item)
 def modify_item(item_id: str, item: Item):
     data = {
         "task_name": item.task_name,
@@ -73,3 +73,4 @@ def modify_item(item_id: str, item: Item):
         updated_item = response.data[0]
         return Item(**updated_item)
     raise HTTPException(status_code=500, detail="Failed to update item")
+
